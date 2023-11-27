@@ -1,4 +1,4 @@
-import { Bodies, Engine, Render, Runner, World } from "matter-js";
+import { Bodies, Body, Engine, Render, Runner, World } from "matter-js";
 import { FRUITS } from "./fruits";
 
 const engine = Engine.create();
@@ -36,7 +36,8 @@ Render.run(render);
 Runner.run(engine);
 
 let currentBody = null;
-let curentFruit = null;
+let currentFruit = null;
+let disableAction = false;
 
 function addFruit() {
   const index = Math.floor(Math.random() * 5);
@@ -52,9 +53,41 @@ function addFruit() {
   });
 
   currentBody = body;
-  curentFruit = fruit;
+  currentFruit = fruit;
 
   World.add(world, body);
+}
+
+window.onkeydown = (event) => {
+  if (disableAction) {
+    return;
+  }
+
+  switch (event.code) {
+    case "KeyA":
+      Body.setPosition(currentBody, {
+        x: currentBody.position.x - 10,
+        y: currentBody.position.y,
+      });
+      break;
+
+    case "KeyD":
+      Body.setPosition(currentBody, {
+        x: currentBody.position.x + 10,
+        y: currentBody.position.y,
+      });
+      break;
+
+    case "KeyS":
+      currentBody.isSleeping = false;
+      disableAction = true;
+
+      setTimeout(() => {
+        addFruit();
+        disableAction = false;
+      }, 1000);
+      break;
+  }
 }
 
 addFruit();
